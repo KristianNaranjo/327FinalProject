@@ -13,6 +13,7 @@ public class TCPprotocol extends Thread {
 	
 	public TCPprotocol(String input){
 		this.input = input;
+		run();
 	}
 	
 	public void run(){
@@ -26,9 +27,11 @@ public class TCPprotocol extends Thread {
 			case "nextEvenFib":
 				output = Integer.toString(nextEvenFib());
 				break;
-			
-			default:
+			case "quit":
 				output = "quit";
+				break;
+			default:
+				output = "Connected";
 				break;
 		}
 	}

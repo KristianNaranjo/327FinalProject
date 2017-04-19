@@ -19,8 +19,12 @@ public class TCPserver {
 		){
 			String input, output;
 			
+			TCPprotocol t = new TCPprotocol("Establish Connection");
+			output = t.getReturn();
+			out.println(output);
+			
 			while((input = in.readLine()) != null){
-				TCPprotocol t = new TCPprotocol(input);
+				t = new TCPprotocol(input);
 				output = t.getReturn();
 				out.println(output);
 				if(output.equals("quit")){
