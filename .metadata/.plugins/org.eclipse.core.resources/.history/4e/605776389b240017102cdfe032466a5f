@@ -40,7 +40,7 @@ public class TCPprotocol extends Thread {
 		}
 	}
 	
-	public String getOutput(){
+	public String getReturn(){
 		return output;
 	}
 	

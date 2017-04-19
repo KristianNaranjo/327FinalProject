@@ -33,8 +33,9 @@ public class TCPserver {
 			ArrayList<TCPprotocol> tcpThreads = new ArrayList<TCPprotocol>();
 			
 			while((input = in.readLine()) != null){
+				
 				tcpThreads.add(new TCPprotocol(input,lastFib,lastFib2,lastLargerRand,lastPrime));
-				tcpThreads.get(tcpThreads.size()-1).start(); // start newest thread
+				tcpThreads.get(tcpThreads.size()-1).start();
 				output = tcpThreads.get(tcpThreads.size()-1).getOutput();
 				out.println(output);
 				if(output.equals("quit")){
