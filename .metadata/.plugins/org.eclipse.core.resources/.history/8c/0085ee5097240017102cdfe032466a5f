@@ -12,10 +12,10 @@ public class TCPclient {
 		int port = 4445;
 		
 		try (
-	            Socket socket = new Socket(host, port);
-	            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+	            Socket kkSocket = new Socket(host, port);
+	            PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
 	            BufferedReader in = new BufferedReader(
-	                new InputStreamReader(socket.getInputStream()));
+	                new InputStreamReader(kkSocket.getInputStream()));
 	        ) {
 	            BufferedReader stdIn =
 	                new BufferedReader(new InputStreamReader(System.in));
