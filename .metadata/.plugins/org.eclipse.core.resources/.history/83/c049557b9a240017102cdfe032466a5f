@@ -40,14 +40,14 @@ public class TCPprotocol extends Thread {
 		}
 	}
 	
-	public String getOutput(){
+	public String getReturn(){
 		return output;
 	}
 	
 	public int nextPrime(){
-		while(!isPrime(++mLastPrime)){
+		while(!isPrime(++lastPrime)){
 		}
-		return mLastPrime;
+		return lastPrime;
 	}
 	
 	public boolean isPrime(int n){
@@ -61,21 +61,21 @@ public class TCPprotocol extends Thread {
 	}
 	
 	public int nextEvenFib(){
-		if(mLastFib == 0 && mLastFib2 == 0){
-			mLastFib2 = 1;
+		if(lastFib == 0 && lastFib2 == 0){
+			lastFib2 = 1;
 		}
 		do{
-			int temp = mLastFib2;
-			mLastFib2 += mLastFib;
-			mLastFib = temp;
-		} while(mLastFib2 % 2 != 0);
-		return mLastFib2;
+			int temp = lastFib2;
+			lastFib2 += lastFib;
+			lastFib = temp;
+		} while(lastFib2 % 2 != 0);
+		return lastFib2;
 	}
 	
 	public int nextLargerRand(){
 		Random rand = new Random();
-		mLastLargerRand = rand.nextInt(100)+mLastLargerRand;
-		return mLastLargerRand;
+		lastLargerRand = rand.nextInt(100)+lastLargerRand;
+		return lastLargerRand;
 	}
 
 }

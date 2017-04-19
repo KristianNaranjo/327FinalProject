@@ -18,6 +18,7 @@ public class TCPprotocol extends Thread {
 		mLastFib2 = lastFib2;
 		mLastLargerRand = lastLargerRand;
 		mLastPrime = lastPrime;
+		run();
 	}
 	
 	public void run(){
