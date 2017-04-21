@@ -1,3 +1,9 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Random;
 
 public class TCPprotocol extends Thread {
@@ -10,38 +16,59 @@ public class TCPprotocol extends Thread {
 	private String input;
 	private String output;
 	
+	private PrintWriter out;
+	private BufferedReader in;
+	private Socket mClientSocket;
 	
-	public TCPprotocol(String input, int lastFib, int lastFib2,
-			int lastLargerRand, int lastPrime){
-		this.input = input;
-		mLastFib = lastFib;
-		mLastFib2 = lastFib2;
-		mLastLargerRand = lastLargerRand;
-		mLastPrime = lastPrime;
+	public TCPprotocol(Socket clientSocket){
+		mClientSocket = clientSocket;
+		initializeInNOut();
+	}
+	
+	public void initializeInNOut(){
+		try {
+			out = new PrintWriter(mClientSocket.getOutputStream(),true);
+			in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void run(){
-		switch(input){
-			case "nextPrime":
-				output = Integer.toString(nextPrime());
-				break;
-			case "nextLargerRand":
-				output = Integer.toString(nextLargerRand());
-				break;
-			case "nextEvenFib":
-				output = Integer.toString(nextEvenFib());
-				break;
-			case "quit":
-				output = "quit";
-				break;
-			default:
-				output = "Connected";
-				break;
+		try{
+			// output will be null if you haven't connected to the socket yet
+			if(output == null)
+				out.println("Connected");
+				
+			input = in.readLine();
+				
+			while(!input.equals("quit")){
+			
+				switch(input){
+					case "nextPrime":
+						output = Integer.toString(nextPrime());
+						break;
+					case "nextLargerRand":
+						output = Integer.toString(nextLargerRand());
+						break;
+					case "nextEvenFib":
+						output = Integer.toString(nextEvenFib());
+						break;
+					default:
+						output = "Connected";
+						break;
+				}
+				out.println(output);
+				input = in.readLine();
+			}
+			out.println("quit");
+		} catch(IOException e){
+			System.out.println("Exception caught when trying to listen on port "
+	                + mClientSocket.getPort() + " or listening for a connection");
+	            System.out.println(e.getMessage());
 		}
-	}
-	
-	public String getOutput(){
-		return output;
 	}
 	
 	public int nextPrime(){
