@@ -21,11 +21,9 @@ public class TCPserver {
 		){
 			ArrayList<TCPprotocol> tcpThreads = new ArrayList<TCPprotocol>();
 			
-			int[] arr = {mLastFib, mLastFib2, mLastLargerRand, mLastPrime};
-			
 			while(true){
 				Socket clientSocket = serverSocket.accept();
-				tcpThreads.add(new TCPprotocol(clientSocket, arr));
+				tcpThreads.add(new TCPprotocol(clientSocket, mLastFib, mLastFib2, mLastLargerRand, mLastPrime));
 				tcpThreads.get(tcpThreads.size()-1).start(); // start newest thread
 			}
 		} catch(IOException e){	}

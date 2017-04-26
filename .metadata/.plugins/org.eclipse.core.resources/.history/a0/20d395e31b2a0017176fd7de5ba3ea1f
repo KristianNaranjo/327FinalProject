@@ -96,7 +96,7 @@ public class TCPprotocol extends Thread {
 	
 	public int nextEvenFib(){
 		if(protocols[0] == 0 && protocols[1] == 0){
-			protocols[1] = 1;
+			mLastFib2 = 1;
 		}
 		do{
 			int temp = protocols[1];

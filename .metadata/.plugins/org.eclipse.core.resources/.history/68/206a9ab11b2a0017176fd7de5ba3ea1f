@@ -8,10 +8,10 @@ import java.util.Random;
 
 public class TCPprotocol extends Thread {
 	
-	private int mLastFib; // protocols 0
-	private int mLastFib2; // 1
-	private int mLastLargerRand; //2
-	private int mLastPrime; // 3
+	private int mLastFib;
+	private int mLastFib2;
+	private int mLastLargerRand;
+	private int mLastPrime;
 	
 	private int [] protocols;
 	
@@ -25,6 +25,10 @@ public class TCPprotocol extends Thread {
 	public TCPprotocol(Socket clientSocket, int[] arr){
 		mClientSocket = clientSocket;
 		protocols = arr;
+		mLastFib = protocols[0];
+		mLastFib2 = protocols[1];
+		mLastLargerRand = protocols[2];
+		mLastPrime = protocols[3];
 		initializeInNOut();
 	}
 	
@@ -68,6 +72,11 @@ public class TCPprotocol extends Thread {
 				if(input == null){
 					break;
 				}
+				
+				protocols[0] = mLastFib;
+				protocols[1] = mLastFib2;
+				protocols[2] = mLastLargerRand;
+				protocols[3] = mLastPrime;
 			}
 			out.println("quit");
 		} catch(IOException e){
@@ -79,9 +88,9 @@ public class TCPprotocol extends Thread {
 	}
 	
 	public int nextPrime(){
-		while(!isPrime(++protocols[3])){
+		while(!isPrime(++mLastPrime)){
 		}
-		return protocols[3];
+		return mLastPrime;
 	}
 	
 	public boolean isPrime(int n){
@@ -95,21 +104,21 @@ public class TCPprotocol extends Thread {
 	}
 	
 	public int nextEvenFib(){
-		if(protocols[0] == 0 && protocols[1] == 0){
-			protocols[1] = 1;
+		if(mLastFib == 0 && mLastFib2 == 0){
+			mLastFib2 = 1;
 		}
 		do{
-			int temp = protocols[1];
-			protocols[1] += protocols[0];
-			protocols[0] = temp;
-		} while(protocols[1] % 2 != 0);
-		return protocols[1];
+			int temp = mLastFib2;
+			mLastFib2 += mLastFib;
+			mLastFib = temp;
+		} while(mLastFib2 % 2 != 0);
+		return mLastFib2;
 	}
 	
 	public int nextLargerRand(){
 		Random rand = new Random();
-		protocols[2] = rand.nextInt(100)+protocols[2];
-		return protocols[2];
+		mLastLargerRand = rand.nextInt(100)+mLastLargerRand;
+		return mLastLargerRand;
 	}
 
 }

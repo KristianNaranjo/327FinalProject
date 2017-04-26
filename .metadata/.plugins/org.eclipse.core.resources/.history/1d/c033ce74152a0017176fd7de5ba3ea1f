@@ -7,28 +7,25 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class TCPserver {
-	
-	private static int mLastFib;
-	private static int mLastFib2;
-	private static int mLastLargerRand;
-	private static int mLastPrime;
 
 	public static void main(String[] args) throws IOException{
-		int port = 4448;
+		int port = 4447;
 		
 		try(
 			ServerSocket serverSocket = new ServerSocket(port);
 		){
 			ArrayList<TCPprotocol> tcpThreads = new ArrayList<TCPprotocol>();
 			
-			int[] arr = {mLastFib, mLastFib2, mLastLargerRand, mLastPrime};
-			
 			while(true){
 				Socket clientSocket = serverSocket.accept();
-				tcpThreads.add(new TCPprotocol(clientSocket, arr));
+				tcpThreads.add(new TCPprotocol(clientSocket));
 				tcpThreads.get(tcpThreads.size()-1).start(); // start newest thread
 			}
-		} catch(IOException e){	}
+		} catch(IOException e){
+			System.out.println("Exception caught when trying to listen on port "
+	                + port + " or listening for a connection");
+	            System.out.println(e.getMessage());
+		}
 
 	}
 
