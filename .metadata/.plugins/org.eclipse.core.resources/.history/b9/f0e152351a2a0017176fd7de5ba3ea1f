@@ -8,12 +8,10 @@ import java.util.Random;
 
 public class TCPprotocol extends Thread {
 	
-	private int mLastFib; // protocols 0
-	private int mLastFib2; // 1
-	private int mLastLargerRand; //2
-	private int mLastPrime; // 3
-	
-	private int [] protocols;
+	private int mLastFib;
+	private int mLastFib2;
+	private int mLastLargerRand;
+	private int mLastPrime;
 	
 	private String input;
 	private String output;
@@ -24,7 +22,10 @@ public class TCPprotocol extends Thread {
 	
 	public TCPprotocol(Socket clientSocket, int[] arr){
 		mClientSocket = clientSocket;
-		protocols = arr;
+		mLastFib = arr[0];
+		mLastFib2 = arr[1];
+		mLastLargerRand = arr[2];
+		mLastPrime = arr[3];
 		initializeInNOut();
 	}
 	
@@ -42,13 +43,13 @@ public class TCPprotocol extends Thread {
 	public void run(){
 		try{
 			// output will be null if you haven't connected to the socket yet
-			
 			if(output == null)
 				out.println("Connected");
 				
 			input = in.readLine();
 				
 			while(!input.equals("quit")){
+			
 				switch(input){
 					case "nextPrime":
 						output = Integer.toString(nextPrime());
@@ -79,9 +80,9 @@ public class TCPprotocol extends Thread {
 	}
 	
 	public int nextPrime(){
-		while(!isPrime(++protocols[3])){
+		while(!isPrime(++mLastPrime)){
 		}
-		return protocols[3];
+		return mLastPrime;
 	}
 	
 	public boolean isPrime(int n){
@@ -95,21 +96,21 @@ public class TCPprotocol extends Thread {
 	}
 	
 	public int nextEvenFib(){
-		if(protocols[0] == 0 && protocols[1] == 0){
-			protocols[1] = 1;
+		if(mLastFib == 0 && mLastFib2 == 0){
+			mLastFib2 = 1;
 		}
 		do{
-			int temp = protocols[1];
-			protocols[1] += protocols[0];
-			protocols[0] = temp;
-		} while(protocols[1] % 2 != 0);
-		return protocols[1];
+			int temp = mLastFib2;
+			mLastFib2 += mLastFib;
+			mLastFib = temp;
+		} while(mLastFib2 % 2 != 0);
+		return mLastFib2;
 	}
 	
 	public int nextLargerRand(){
 		Random rand = new Random();
-		protocols[2] = rand.nextInt(100)+protocols[2];
-		return protocols[2];
+		mLastLargerRand = rand.nextInt(100)+mLastLargerRand;
+		return mLastLargerRand;
 	}
 
 }

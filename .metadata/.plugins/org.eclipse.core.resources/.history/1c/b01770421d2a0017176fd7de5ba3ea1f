@@ -81,6 +81,7 @@ public class TCPprotocol extends Thread {
 	public int nextPrime(){
 		while(!isPrime(++protocols[3])){
 		}
+		System.out.println(protocols);
 		return protocols[3];
 	}
 	
