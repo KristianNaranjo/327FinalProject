@@ -1,3 +1,17 @@
+/*Kristian Naranjo
+ * Oscar Valdez
+ * Jeannine Westerkamp
+ * Josh Andreasian
+ * Files Associated: Communicates with TCPserver via socket
+ * Description: This program first initializes the ip address of the host,
+ * along with the same port number declared in the server program. It then
+ * initializes variables to get the input and output stream from the server.
+ * The server will give output depending on what is entered by the user.
+ * The user can enter nextPrime, nextLargerRand, or nextEvenFib and they will
+ * get the next 5 corresponding numbers. If the user enters anything else, the
+ * server will return "Connected". Or, the client will stop if the user enters quit.
+ * */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,21 +22,25 @@ import java.net.UnknownHostException;
 public class TCPclient {
 
 	public static void main(String[] args) {
-		String host = "localhost";
+		String host = "localhost"; // ip address of host/server
 		int port = 4445;
 		
 		try (
 	            Socket socket = new Socket(host, port);
+				// for clients to send to server
 	            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				// for clients to receive data from server
 	            BufferedReader in = new BufferedReader(
 	                new InputStreamReader(socket.getInputStream()));
 	        ) {
+				// for user input
 	            BufferedReader stdIn =
 	                new BufferedReader(new InputStreamReader(System.in));
 	            String fromServer;
 	            String fromUser;
 
 	            while ((fromServer = in.readLine()) != null) {
+	            	// get message back from server
 	                System.out.println("Server: " + fromServer);
 	                if (fromServer.equals("quit"))
 	                    break;
@@ -30,7 +48,7 @@ public class TCPclient {
 	                fromUser = stdIn.readLine();
 	                if (fromUser != null) {
 	                    System.out.println("Client: " + fromUser);
-	                    out.println(fromUser);
+	                    out.println(fromUser); // send request to server
 	                }
 	            }
 	        } catch (UnknownHostException e) {
