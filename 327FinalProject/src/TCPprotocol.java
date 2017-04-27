@@ -1,19 +1,29 @@
+/*Kristian Naranjo
+ * Oscar Valdez
+ * Jeannine Westerkamp
+ * Josh Andreasian
+ * Files Associated: Created as a thread from TCPserver (each thread uses its own socket)
+ * Description: This class is used by the TCPserver as a thread for each client. It
+ * takes in the clientSocket as a parameter to ensure that it is connection-oriented.
+ * It also takes in array variables that are passed by reference to update values that
+ * are stored in the TCPserver class, allowing for the server to be stateful. Each client
+ * having its own thread ensures that the server is concurrent as well. */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TCPprotocol extends Thread {
 	
-	private int mLastFib; // protocols 0
-	private int mLastFib2; // 1
-	private int mLastLargerRand; //2
-	private int mLastPrime; // 3
+	private ReentrantLock lock = new ReentrantLock();
 	
-	private int [] protocols;
+	private long [] mLastFib;
+	private int [] mLastLargerRand;
+	private int [] mLastPrime;
 	
 	private String input;
 	private String output;
@@ -22,18 +32,23 @@ public class TCPprotocol extends Thread {
 	private BufferedReader in;
 	private Socket mClientSocket;
 	
-	public TCPprotocol(Socket clientSocket, int[] arr){
+	public TCPprotocol(Socket clientSocket, long[] lastFib, int[] lastLargerRand, int[] lastPrime){
+		// initialize variables referenced from server
 		mClientSocket = clientSocket;
-		protocols = arr;
+		mLastFib = lastFib;
+		mLastLargerRand = lastLargerRand;
+		mLastPrime = lastPrime;
 		initializeInNOut();
 	}
 	
 	public void initializeInNOut(){
+		// initialize input and output from client
 		try {
+			// to send to client
 			out = new PrintWriter(mClientSocket.getOutputStream(),true);
+			// to receive from client
 			in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -42,74 +57,123 @@ public class TCPprotocol extends Thread {
 	public void run(){
 		try{
 			// output will be null if you haven't connected to the socket yet
-			
-			if(output == null)
+			if(input == null)
 				out.println("Connected");
 				
-			input = in.readLine();
+			input = in.readLine(); // get input from user
 				
 			while(!input.equals("quit")){
+				// return next 5 numbers depending on input from user
+				output = "";
 				switch(input){
+				/** add a mutex around each manipulation of the output variable
+				 * to prevent a race condition
+				*/
 					case "nextPrime":
-						output = Integer.toString(nextPrime());
+						for(int i = 0; i<5; i++){
+							lock.lock();
+							try{
+								output += Integer.toString(nextPrime()) + "  ";
+							}
+							finally{ lock.unlock();}
+						}
 						break;
 					case "nextLargerRand":
-						output = Integer.toString(nextLargerRand());
+						for(int i = 0; i<5; i++){
+							lock.lock();
+							try{
+								output += Integer.toString(nextLargerRand()) + "  ";
+							}
+							finally{ lock.unlock();}
+						}
 						break;
 					case "nextEvenFib":
-						output = Integer.toString(nextEvenFib());
+						for(int i = 0; i<5; i++){
+							lock.lock();
+							try{
+								output += Long.toString(nextEvenFib()) + "  ";
+							}
+							finally{lock.unlock();}
+						}
 						break;
 					default:
 						output = "Connected";
 						break;
 				}
-				out.println(output);
-				input = in.readLine();
-				if(input == null){
-					break;
+				lock.lock();
+				try{
+					/* ensure that the correct output value is
+					 * displayed by adding a mutex for the critical section
+					*/
+					out.println(output);
+					input = in.readLine();
+					if(input == null){
+						break;
+					}
 				}
+				finally { lock.unlock();}
 			}
 			out.println("quit");
-		} catch(IOException e){
-			System.out.println("Exception caught when trying to listen on port "
-	                + mClientSocket.getPort() + " or listening for a connection");
-	            System.out.println(e.getMessage());
-	            return;
-		}
+		} catch(IOException e){	}
 	}
 	
 	public int nextPrime(){
-		while(!isPrime(++protocols[3])){
+		// lock critical section to prevent race condition
+		lock.lock();
+		try{
+			while(!isPrime(++mLastPrime[0])){
+			}
+			return mLastPrime[0];
 		}
-		return protocols[3];
+		finally{
+			lock.unlock();
+		}
 	}
 	
 	public boolean isPrime(int n){
-		if(n<2)
-			return false;
-		for(int i = 2; i <= (int)Math.sqrt(n); i++){
-			if(n % i == 0)
+		lock.lock(); // lock critical section
+		try{
+			if(n<2)
 				return false;
+			for(int i = 2; i <= (int)Math.sqrt(n); i++){
+				if(n % i == 0)
+					return false;
+			}
+			return true;
 		}
-		return true;
+		finally{
+			lock.unlock();
+		}
 	}
 	
-	public int nextEvenFib(){
-		if(protocols[0] == 0 && protocols[1] == 0){
-			protocols[1] = 1;
+	public long nextEvenFib(){
+		lock.lock();
+		try{ // lock the critical section to prevent a race condition
+			if(mLastFib[0] == 0 && mLastFib[1] == 0){
+				mLastFib[1] = 1;
+			}
+			do{
+				long temp = mLastFib[1];
+				mLastFib[1] += mLastFib[0];
+				mLastFib[0] = temp;
+			} while(mLastFib[1] % 2 != 0);
+			return mLastFib[1];
 		}
-		do{
-			int temp = protocols[1];
-			protocols[1] += protocols[0];
-			protocols[0] = temp;
-		} while(protocols[1] % 2 != 0);
-		return protocols[1];
+		finally{
+			lock.unlock();
+		}
 	}
 	
 	public int nextLargerRand(){
-		Random rand = new Random();
-		protocols[2] = rand.nextInt(100)+protocols[2];
-		return protocols[2];
+		lock.lock();
+		try{ // lock the critical section to prevent a race condition
+			Random rand = new Random();
+			mLastLargerRand[0] = rand.nextInt(100) + mLastLargerRand[0];
+			return mLastLargerRand[0];
+		}
+		finally{
+			lock.unlock();
+		}
 	}
 
 }

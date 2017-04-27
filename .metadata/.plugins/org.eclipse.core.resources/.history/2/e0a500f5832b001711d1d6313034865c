@@ -1,0 +1,40 @@
+/*Kristian Naranjo
+ * Oscar Valdez
+ * Jeannine
+ * Josh Andreasian
+ * Files Associated: Spawns threads of class TCPprotocol and communicates
+ * with TCPclient via sockets
+ * Description:*/
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+
+public class TCPserver {
+
+	public static void main(String[] args) throws IOException{
+		int port = 4445; // clients must use this same port number
+		
+		try(
+			ServerSocket serverSocket = new ServerSocket(port);
+		){
+			ArrayList<TCPprotocol> tcpThreads = new ArrayList<TCPprotocol>();
+			
+			// use arrays to pass by reference to keep server stateful
+			long[] lastFib = {0,0};
+			int[] lastLargerRand = {0};
+			int[] lastPrime = {0};
+			
+			while(true){
+				// establish connection between client and server
+				Socket clientSocket = serverSocket.accept();
+				// spawn a new thread for each new connection to a client (to be concurrent)
+				tcpThreads.add(new TCPprotocol(clientSocket, lastFib, lastLargerRand, lastPrime));
+				tcpThreads.get(tcpThreads.size()-1).start(); // start newest thread
+			}
+		} catch(IOException e){	}
+
+	}
+
+}

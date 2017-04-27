@@ -1,0 +1,149 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class TCPprotocol extends Thread {
+	
+	private ReentrantLock lock = new ReentrantLock();
+	
+	private long [] mLastFib;
+	private int [] mLastLargerRand;
+	private int [] mLastPrime;
+	
+	private String input;
+	private String output;
+	
+	private PrintWriter out;
+	private BufferedReader in;
+	private Socket mClientSocket;
+	
+	public TCPprotocol(Socket clientSocket, long[] lastFib, int[] lastLargerRand, int[] lastPrime){
+		mClientSocket = clientSocket;
+		mLastFib = lastFib;
+		mLastLargerRand = lastLargerRand;
+		mLastPrime = lastPrime;
+		initializeInNOut();
+	}
+	
+	public void initializeInNOut(){
+		try {
+			out = new PrintWriter(mClientSocket.getOutputStream(),true);
+			in = new BufferedReader(new InputStreamReader(mClientSocket.getInputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void run(){
+		try{
+			// output will be null if you haven't connected to the socket yet
+			
+			if(input == null)
+				out.println("Connected");
+				
+			input = in.readLine();
+				
+			while(!input.equals("quit")){
+				output = "";
+				switch(input){
+					case "nextPrime":
+						for(int i = 0; i<5; i++){
+							lock.lock();
+							output += Integer.toString(nextPrime()) + "  ";
+							lock.unlock();
+						}
+						break;
+					case "nextLargerRand":
+						for(int i = 0; i<5; i++){
+							lock.lock();
+							output += Integer.toString(nextLargerRand()) + "  ";
+							lock.unlock();
+						}
+						break;
+					case "nextEvenFib":
+						for(int i = 0; i<5; i++){
+							lock.lock();
+							output += Long.toString(nextEvenFib()) + "  ";
+							lock.unlock();
+						}
+						break;
+					default:
+						output = "Connected";
+						break;
+				}
+				out.println(output);
+				input = in.readLine();
+				if(input == null){
+					break;
+				}
+			}
+			out.println("quit");
+		} catch(IOException e){	}
+	}
+	
+	public int nextPrime(){
+		lock.lock();
+		try{
+			while(!isPrime(++mLastPrime[0])){
+			}
+			return mLastPrime[0];
+		}
+		finally{
+			lock.unlock();
+		}
+	}
+	
+	public boolean isPrime(int n){
+		lock.lock();
+		try{
+			if(n<2)
+				return false;
+			for(int i = 2; i <= (int)Math.sqrt(n); i++){
+				if(n % i == 0)
+					return false;
+			}
+			return true;
+		}
+		finally{
+			lock.unlock();
+		}
+	}
+	
+	public long nextEvenFib(){
+		lock.lock();
+		try{
+			if(mLastFib[0] == 0 && mLastFib[1] == 0){
+				mLastFib[1] = 1;
+			}
+			do{
+				long temp = mLastFib[1];
+				mLastFib[1] += mLastFib[0];
+				mLastFib[0] = temp;
+			} while(mLastFib[1] % 2 != 0);
+			return mLastFib[1];
+		}
+		finally{
+			lock.unlock();
+		}
+	}
+	
+	public int nextLargerRand(){
+		lock.lock();
+		try{
+			Random rand = new Random();
+			mLastLargerRand[0] = rand.nextInt(100) + mLastLargerRand[0];
+			return mLastLargerRand[0];
+		}
+		finally{
+			lock.unlock();
+		}
+	}
+
+}

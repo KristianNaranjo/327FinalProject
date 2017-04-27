@@ -1,0 +1,35 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+
+public class TCPserver {
+
+	public static void main(String[] args) throws IOException{
+		int port = 4445;
+		
+		try(
+			ServerSocket serverSocket = new ServerSocket(port);
+		){
+			ArrayList<TCPprotocol> tcpThreads = new ArrayList<TCPprotocol>();
+			
+			// use arrays to pass by reference to keep server stateful
+			long[] lastFib = {0,0};
+			int[] lastLargerRand = {0};
+			int[] lastPrime = {0};
+			
+			while(true){
+				// establish connection between client and server
+				Socket clientSocket = serverSocket.accept();
+				// spawn a new thread for each new connection to a client (to be concurrent)
+				tcpThreads.add(new TCPprotocol(clientSocket, lastFib, lastLargerRand, lastPrime));
+				tcpThreads.get(tcpThreads.size()-1).start(); // start newest thread
+			}
+		} catch(IOException e){	}
+
+	}
+
+}
