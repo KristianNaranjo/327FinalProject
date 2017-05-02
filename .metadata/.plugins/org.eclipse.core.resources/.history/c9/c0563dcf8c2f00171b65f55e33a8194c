@@ -1,0 +1,27 @@
+
+public class LocalThread {//extends Thread{
+	private static int lastEven;
+	private static int lastOdd;
+	
+	public static void main(String[] args){
+		for(int i=0; i <5; i++){
+		System.out.println("Next Even: "+nextEven());
+		System.out.println("Next Odd: "+nextOdd());
+		}
+	}
+	
+	public static int nextEven(){
+		lastEven += 2;
+		return lastEven;
+	}
+	
+	public static int nextOdd(){
+		if(lastOdd == 0){
+			lastOdd++;
+		}
+		else{
+			lastOdd += 2;
+		}
+		return lastOdd;
+	}
+}
