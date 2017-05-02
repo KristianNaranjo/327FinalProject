@@ -1,0 +1,43 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class LocalThread extends Thread{
+	private int lastEven;
+	private int lastOdd;
+	private Queue<String> mRequest;
+	private Queue<Integer> mReturnQueue = new LinkedList<Integer>();
+	
+	public LocalThread(Queue<String> requestQueue){
+		mRequest = requestQueue;
+	}
+	
+	public void run(){
+		switch(mRequest.poll()){
+		case "nextEven":
+			mReturnQueue.add(nextEven());
+			break;
+		case "nextOdd":
+			mReturnQueue.add(nextOdd());
+			break;				
+		}
+	}
+	
+	public int nextEven(){
+		lastEven += 2;
+		return lastEven;
+	}
+	
+	public int nextOdd(){
+		if(lastOdd == 0){
+			lastOdd++;
+		}
+		else{
+			lastOdd += 2;
+		}
+		return lastOdd;
+	}
+	
+	public Queue getReturnQueue(){
+		return mReturnQueue;
+	}
+}
