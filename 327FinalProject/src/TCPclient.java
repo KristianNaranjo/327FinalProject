@@ -1,4 +1,4 @@
-/*Kristian Naranjo
+/* Kristian Naranjo
  * Oscar Valdez
  * Jeannine Westerkamp
  * Josh Andreasian

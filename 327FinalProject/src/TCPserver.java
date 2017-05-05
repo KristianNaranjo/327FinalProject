@@ -23,9 +23,7 @@ public class TCPserver {
 		
 		try(
 			ServerSocket serverSocket = new ServerSocket(port);
-		){
-			ArrayList<TCPprotocol> tcpThreads = new ArrayList<TCPprotocol>();
-			
+		){			
 			// use arrays to pass by reference to keep server stateful
 			long[] lastFib = {0,0};
 			int[] lastLargerRand = {0};
@@ -35,8 +33,12 @@ public class TCPserver {
 				// establish connection between client and server
 				Socket clientSocket = serverSocket.accept();
 				// spawn a new thread for each new connection to a client (to be concurrent)
+				TCPprotocol t = new TCPprotocol(clientSocket, lastFib, lastLargerRand, lastPrime);
+				t.start();
+				/*
 				tcpThreads.add(new TCPprotocol(clientSocket, lastFib, lastLargerRand, lastPrime));
 				tcpThreads.get(tcpThreads.size()-1).start(); // start newest thread
+				*/
 			}
 		} catch(IOException e){	}
 
