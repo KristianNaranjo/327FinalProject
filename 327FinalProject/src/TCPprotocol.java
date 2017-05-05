@@ -1,4 +1,4 @@
-/*Kristian Naranjo
+/* Kristian Naranjo
  * Oscar Valdez
  * Jeannine Westerkamp
  * Josh Andreasian
@@ -70,31 +70,13 @@ public class TCPprotocol extends Thread {
 				 * to prevent a race condition
 				*/
 					case "nextPrime":
-						for(int i = 0; i<5; i++){
-							lock.lock();
-							try{
-								output += Integer.toString(nextPrime()) + "  ";
-							}
-							finally{ lock.unlock();}
-						}
+						output += Integer.toString(nextPrime());
 						break;
 					case "nextLargerRand":
-						for(int i = 0; i<5; i++){
-							lock.lock();
-							try{
-								output += Integer.toString(nextLargerRand()) + "  ";
-							}
-							finally{ lock.unlock();}
-						}
+						output += Integer.toString(nextLargerRand());
 						break;
 					case "nextEvenFib":
-						for(int i = 0; i<5; i++){
-							lock.lock();
-							try{
-								output += Long.toString(nextEvenFib()) + "  ";
-							}
-							finally{lock.unlock();}
-						}
+						output += Long.toString(nextEvenFib());
 						break;
 					default:
 						output = "Connected";
@@ -131,19 +113,13 @@ public class TCPprotocol extends Thread {
 	}
 	
 	public boolean isPrime(int n){
-		lock.lock(); // lock critical section
-		try{
-			if(n<2)
+		if(n<2)
+			return false;
+		for(int i = 2; i <= (int)Math.sqrt(n); i++){
+			if(n % i == 0)
 				return false;
-			for(int i = 2; i <= (int)Math.sqrt(n); i++){
-				if(n % i == 0)
-					return false;
-			}
-			return true;
 		}
-		finally{
-			lock.unlock();
-		}
+		return true;
 	}
 	
 	public long nextEvenFib(){
