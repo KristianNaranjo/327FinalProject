@@ -31,7 +31,7 @@ public class uThr extends Thread {
 		
 		// add to request queue 
 		for (int i = 0; i < 20; i++) { // 20 iterations
-			selector = rand.nextInt(5) + 1; // random command 1-5
+			selector = rand.nextInt(5); // random command 1-5
 			mRequestQueue.add(command[selector]);
 		}
 
