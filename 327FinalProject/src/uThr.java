@@ -23,21 +23,6 @@ public class uThr extends Thread {
 		mReturnQueue = returnQueue;
 	}
 	
-	/*
-	public void initializeInNOut(){
-		// initialize input and output from runtimeThr
-		try {
-			// to send to runtime thread 
-			out = new PrintWriter(mSocket.getOutputStream(),true);
-			// to receive from runtime thread 
-			in = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-	}
-	*/
-	
 	public void run()  { 
 		Random rand = new Random();
 		int selector;
