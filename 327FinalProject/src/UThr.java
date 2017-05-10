@@ -1,6 +1,7 @@
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /* 
@@ -11,14 +12,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * along with any other needed pieces of data, and waits for the result produced by this command. 
  * After its result is enqueued in the returnQue, this thread fetches the returned value and outputs on the terminal.
  */
-public class uThr extends Thread {
+public class UThr extends Thread {
 	
-	private Queue<String> mRequestQueue = new LinkedList<String>();
-	private Queue<Integer> mReturnQueue = new LinkedList<Integer>();
+	private static ConcurrentLinkedQueue<String> mRequestQueue = new ConcurrentLinkedQueue<String>();
+	private static ConcurrentLinkedQueue<Integer> mReturnQueue = new ConcurrentLinkedQueue<Integer>();
 	private ReentrantLock lock = new ReentrantLock();
 	
 	
-	public uThr (Queue<String> requestQueue, Queue<Integer> returnQueue) { 
+	public UThr (ConcurrentLinkedQueue<String> requestQueue, ConcurrentLinkedQueue<Integer> returnQueue) { 
 		mRequestQueue = requestQueue;
 		mReturnQueue = returnQueue;
 	}
@@ -32,7 +33,9 @@ public class uThr extends Thread {
 		// add to request queue 
 		for (int i = 0; i < 20; i++) { // 20 iterations
 			selector = rand.nextInt(5); // random command 1-5
-			mRequestQueue.add(command[selector]);
+			Thread t = new Thread(new RuntimeThread(command[selector]));
+	        t.start();
+			//mRequestQueue.add(command[selector]);
 		}
 
 		// read from return queue 
