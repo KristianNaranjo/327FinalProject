@@ -7,12 +7,12 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class networkThread extends Thread{
+public class NetworkThread extends Thread{
 
 	private Queue<Integer> returnQueue = new LinkedList<Integer>();
 	private String request;
 
-	public networkThread(String request, Queue<Integer> returnQueue){
+	public NetworkThread(String request, Queue<Integer> returnQueue){
 		this.returnQueue= returnQueue;
 		this.request = request;
 	}
