@@ -6,13 +6,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class NetworkThread extends Thread{
 
-	private Queue<Integer> returnQueue = new LinkedList<Integer>();
+	private ConcurrentLinkedQueue<Integer> returnQueue = new ConcurrentLinkedQueue<Integer>();
 	private String request;
 
-	public NetworkThread(String request, Queue<Integer> returnQueue){
+	public NetworkThread(String request, ConcurrentLinkedQueue<Integer> returnQueue){
 		this.returnQueue= returnQueue;
 		this.request = request;
 	}
