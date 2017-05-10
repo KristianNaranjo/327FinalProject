@@ -5,6 +5,8 @@ public class RuntimeThread extends Thread {
 
 	private ConcurrentLinkedQueue<Request> mRequestQueue = new ConcurrentLinkedQueue<Request>();
 	private ConcurrentLinkedQueue<String> mReturnQueue = new ConcurrentLinkedQueue<String>();
+	private int[] lastEven = new int[1];
+	private int[] lastOdd = new int[1];
 	
 	public RuntimeThread(){
 		mRequestQueue = TCPclient.requestQueue;
@@ -18,12 +20,12 @@ public class RuntimeThread extends Thread {
 	        switch (mRequestQueue.peek().getRequest()) {
 	        	case "nextEven": 
 	        		item = mRequestQueue.poll();
-	        	    t = new Thread(new LocalThread(item, mReturnQueue));
+	        	    t = new Thread(new LocalThread(item, mReturnQueue, lastEven, lastOdd));
 					t.start();
 	        		break;
 	        	case "nextOdd":
 	        		item = mRequestQueue.poll();
-	        	    t = new Thread(new LocalThread(item, mReturnQueue));
+	        	    t = new Thread(new LocalThread(item, mReturnQueue, lastEven, lastOdd));
 					t.start();
 	        		break;
 	        	case "nextEvenFib":

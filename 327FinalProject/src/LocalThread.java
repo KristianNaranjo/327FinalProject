@@ -2,15 +2,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LocalThread extends Thread{
-	private int lastEven;
-	private int lastOdd;
+	private int[] mLastEven;
+	private int[] mLastOdd;
 	private Request mRequest;
 	private ConcurrentLinkedQueue<String> mReturnQueue;
 	private ReentrantLock lock = new ReentrantLock();
 	
-	public LocalThread(Request request, ConcurrentLinkedQueue<String> returnQueue){
+	public LocalThread(Request request, ConcurrentLinkedQueue<String> returnQueue,
+			int[] lastEven, int[] lastOdd){
 		mRequest = request;
 		mReturnQueue = returnQueue;
+		mLastEven = lastEven;
+		mLastOdd = lastOdd;
 	}
 	
 	public void run(){
@@ -34,8 +37,8 @@ public class LocalThread extends Thread{
 	public int nextEven(){
 		lock.lock();
 		try{
-			lastEven += 2;
-			return lastEven;
+			mLastEven[0] += 2;
+			return mLastEven[0];
 		}
 		finally{
 			lock.unlock();
@@ -45,13 +48,13 @@ public class LocalThread extends Thread{
 	public int nextOdd(){
 		lock.lock();
 		try{
-			if(lastOdd == 0){
-				lastOdd++;
+			if(mLastOdd[0] == 0){
+				mLastOdd[0]++;
 			}
 			else{
-				lastOdd += 2;
+				mLastOdd[0] += 2;
 			}
-			return lastOdd;
+			return mLastOdd[0];
 		}
 		finally{
 			lock.unlock();
