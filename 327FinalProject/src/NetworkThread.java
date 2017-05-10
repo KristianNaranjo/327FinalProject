@@ -7,18 +7,15 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class NetworkThread extends Thread{
 
 	private ConcurrentLinkedQueue<Integer> returnQueue = new ConcurrentLinkedQueue<Integer>();
-	private String request;
+	private Request request;
 
-	public NetworkThread(String request, ConcurrentLinkedQueue<Integer> returnQueue){
+	public NetworkThread(Request request, ConcurrentLinkedQueue<Integer> returnQueue){
 		this.returnQueue= returnQueue;
-		this.request = request;
-	}
-	
-	public void setRequest(String request){
 		this.request = request;
 	}
 	
@@ -26,7 +23,7 @@ public class NetworkThread extends Thread{
 		String host = "localhost"; // ip address of host/server
 		int port = 4445;
         String fromServer = null;
-        //later: response from server. need it here ´cause of catch
+        //later: response from server. need it here because of catch
 		
 		try (
 	            Socket socket = new Socket(host, port);
@@ -36,11 +33,25 @@ public class NetworkThread extends Thread{
 	            BufferedReader in = new BufferedReader(
 	                new InputStreamReader(socket.getInputStream()));
 	        ) {
-	            while (request != null || request != "quit") {
+	            while (request.getRequest() != null || request.getRequest() != "quit") {
 	            	out.println(request); // send request to server
 	            	fromServer = in.readLine();	// get message back from server
-	            	returnQueue.add(Integer.parseInt(fromServer));
-	            	//add the sever´s message to the returnQueue
+	            	try{
+	            		returnQueue.add(Integer.parseInt(fromServer));
+	            		request.getLock().lock();
+	            		try{
+	            			request.getCondition().signal();
+	            		}
+	            		finally{
+	            			request.getLock().unlock();
+	            		}
+	            		
+	            	}
+	            	catch(NumberFormatException e){
+	            		System.out.println("Connected");
+	            	}
+	            	
+	            	//add the sever's message to the returnQueue
 	                if (fromServer.equals("quit"))
 	                	break;       
 	            }

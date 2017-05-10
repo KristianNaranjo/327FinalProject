@@ -1,28 +1,35 @@
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LocalThread extends Thread{
 	private int lastEven;
 	private int lastOdd;
-	private String mRequest;
+	private Request mRequest;
 	private ConcurrentLinkedQueue<Integer> mReturnQueue;
 	private ReentrantLock lock = new ReentrantLock();
 	
-	public LocalThread(String request, ConcurrentLinkedQueue<Integer> returnQueue){
+	public LocalThread(Request request, ConcurrentLinkedQueue<Integer> returnQueue){
 		mRequest = request;
 		mReturnQueue = returnQueue;
 	}
 	
 	public void run(){
-		switch(mRequest){
-		case "nextEven":
-			mReturnQueue.add(nextEven());
-			break;
-		case "nextOdd":
-			mReturnQueue.add(nextOdd());
-			break;				
+		switch(mRequest.getRequest()){
+			case "nextEven":
+				System.out.println("before");
+				mReturnQueue.add(nextEven());
+				System.out.println("after" + mReturnQueue.peek());
+				break;
+			case "nextOdd":
+				mReturnQueue.add(nextOdd());
+				break;				
+		}
+		mRequest.getLock().lock();
+		try{
+			mRequest.getCondition().signal();
+		}
+		finally{
+			mRequest.getLock().unlock();
 		}
 	}
 	

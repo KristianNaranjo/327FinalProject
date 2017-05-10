@@ -3,27 +3,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class RuntimeThread extends Thread {
 
 
-	private static ConcurrentLinkedQueue<String> mRequestQueue = new ConcurrentLinkedQueue<String>();
-	private static ConcurrentLinkedQueue<Integer> mReturnQueue = new ConcurrentLinkedQueue<Integer>();
+	private ConcurrentLinkedQueue<Request> mRequestQueue = new ConcurrentLinkedQueue<Request>();
+	private ConcurrentLinkedQueue<Integer> mReturnQueue = new ConcurrentLinkedQueue<Integer>();
 	
-	public RuntimeThread(String request){
-		mRequestQueue.add(request);
+	public RuntimeThread(){
+		mRequestQueue = TCPclient.requestQueue;
+		mReturnQueue = TCPclient.returnQueue;
 	}
+	
 	public void run(){
-		String item = null;
+		Request item = null;
         Thread t;
-        switch (mRequestQueue.peek()) {
+        
+        switch (mRequestQueue.peek().getRequest()) {
         	case "nextEven": 
         		item = mRequestQueue.poll();
         	    t = new Thread(new LocalThread(item, mReturnQueue));
 				t.start();
-
         		break;
         	case "nextOdd":
         		item = mRequestQueue.poll();
         	    t = new Thread(new LocalThread(item, mReturnQueue));
 				t.start();
-				
         		break;
         	case "nextEvenFib":
         		item = mRequestQueue.poll();
