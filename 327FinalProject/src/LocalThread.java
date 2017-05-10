@@ -5,10 +5,10 @@ public class LocalThread extends Thread{
 	private int lastEven;
 	private int lastOdd;
 	private Request mRequest;
-	private ConcurrentLinkedQueue<Integer> mReturnQueue;
+	private ConcurrentLinkedQueue<String> mReturnQueue;
 	private ReentrantLock lock = new ReentrantLock();
 	
-	public LocalThread(Request request, ConcurrentLinkedQueue<Integer> returnQueue){
+	public LocalThread(Request request, ConcurrentLinkedQueue<String> returnQueue){
 		mRequest = request;
 		mReturnQueue = returnQueue;
 	}
@@ -16,12 +16,10 @@ public class LocalThread extends Thread{
 	public void run(){
 		switch(mRequest.getRequest()){
 			case "nextEven":
-				System.out.println("before");
-				mReturnQueue.add(nextEven());
-				System.out.println("after" + mReturnQueue.peek());
+				mReturnQueue.add(Integer.toString(nextEven()));
 				break;
 			case "nextOdd":
-				mReturnQueue.add(nextOdd());
+				mReturnQueue.add(Integer.toString(nextOdd()));
 				break;				
 		}
 		mRequest.getLock().lock();
