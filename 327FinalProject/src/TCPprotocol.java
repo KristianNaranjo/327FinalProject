@@ -56,14 +56,10 @@ public class TCPprotocol extends Thread {
 	
 	public void run(){
 		try{
-			// output will be null if you haven't connected to the socket yet
-			if(input == null)
-				out.println("Connected");
-				
-			input = in.readLine(); // get input from user
+			
+			input = in.readLine(); // get input from client
 				
 			while(!input.equals("quit")){
-				// return next 5 numbers depending on input from user
 				output = "";
 				switch(input){
 				/** add a mutex around each manipulation of the output variable
@@ -79,7 +75,7 @@ public class TCPprotocol extends Thread {
 						output += Long.toString(nextEvenFib());
 						break;
 					default:
-						output = "Connected";
+						output = "You entered: " + input;
 						break;
 				}
 				lock.lock();

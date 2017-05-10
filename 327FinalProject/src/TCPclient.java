@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TCPclient {
 	static ConcurrentLinkedQueue<Request> requestQueue = new ConcurrentLinkedQueue<Request>();
-	static ConcurrentLinkedQueue<Integer> returnQueue = new ConcurrentLinkedQueue<Integer>();
+	static ConcurrentLinkedQueue<String> returnQueue = new ConcurrentLinkedQueue<String>();
 
 	public static void main(String[] args) {
 		

@@ -16,11 +16,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class UThr extends Thread {
 	
 	private static ConcurrentLinkedQueue<Request> mRequestQueue = new ConcurrentLinkedQueue<Request>();
-	private static ConcurrentLinkedQueue<Integer> mReturnQueue = new ConcurrentLinkedQueue<Integer>();
+	private static ConcurrentLinkedQueue<String> mReturnQueue = new ConcurrentLinkedQueue<String>();
 	private ReentrantLock lock = new ReentrantLock();
 	
 	
-	public UThr (ConcurrentLinkedQueue<Request> requestQueue, ConcurrentLinkedQueue<Integer> returnQueue) { 
+	public UThr (ConcurrentLinkedQueue<Request> requestQueue, ConcurrentLinkedQueue<String> returnQueue) { 
 		mRequestQueue = requestQueue;
 		mReturnQueue = returnQueue;
 	}
@@ -46,8 +46,8 @@ public class UThr extends Thread {
 			
 				if (!mReturnQueue.isEmpty()) { // while queue is not empty  
 					try { 
-					 reply = mReturnQueue.poll().toString();
-					 System.out.println("Reply from runtime thread: " + reply);
+					 reply = mReturnQueue.poll();
+					 System.out.println("Reply from runtime thread for "+command[selector]+": " + reply);
 					} catch (Exception e) { 
 						System.out.println("Empty Queue");
 					}

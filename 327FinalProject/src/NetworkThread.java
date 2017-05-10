@@ -11,10 +11,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class NetworkThread extends Thread{
 
-	private ConcurrentLinkedQueue<Integer> returnQueue = new ConcurrentLinkedQueue<Integer>();
+	private ConcurrentLinkedQueue<String> returnQueue = new ConcurrentLinkedQueue<String>();
 	private Request request;
 
-	public NetworkThread(Request request, ConcurrentLinkedQueue<Integer> returnQueue){
+	public NetworkThread(Request request, ConcurrentLinkedQueue<String> returnQueue){
 		this.returnQueue= returnQueue;
 		this.request = request;
 	}
@@ -33,11 +33,11 @@ public class NetworkThread extends Thread{
 	            BufferedReader in = new BufferedReader(
 	                new InputStreamReader(socket.getInputStream()));
 	        ) {
-	            while (request.getRequest() != null || request.getRequest() != "quit") {
-	            	out.println(request); // send request to server
+	            if (request.getRequest() != null) {
+	            	out.println(request.getRequest()); // send request to server
 	            	fromServer = in.readLine();	// get message back from server
 	            	try{
-	            		returnQueue.add(Integer.parseInt(fromServer));
+	            		returnQueue.add(fromServer);
 	            		request.getLock().lock();
 	            		try{
 	            			request.getCondition().signal();
@@ -47,13 +47,14 @@ public class NetworkThread extends Thread{
 	            		}
 	            		
 	            	}
+	            	// fromServer is a String that isn't a number
 	            	catch(NumberFormatException e){
 	            		System.out.println("Connected");
 	            	}
 	            	
 	            	//add the sever's message to the returnQueue
 	                if (fromServer.equals("quit"))
-	                	break;       
+	                	return;       
 	            }
 	        } catch (UnknownHostException e) {
 	            System.err.println("Don't know about host " + host);

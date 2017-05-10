@@ -35,10 +35,6 @@ public class TCPserver {
 				// spawn a new thread for each new connection to a client (to be concurrent)
 				TCPprotocol t = new TCPprotocol(clientSocket, lastFib, lastLargerRand, lastPrime);
 				t.start();
-				/*
-				tcpThreads.add(new TCPprotocol(clientSocket, lastFib, lastLargerRand, lastPrime));
-				tcpThreads.get(tcpThreads.size()-1).start(); // start newest thread
-				*/
 			}
 		} catch(IOException e){	}
 
