@@ -11,7 +11,6 @@
  */
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class UThr extends Thread {
@@ -23,8 +22,10 @@ public class UThr extends Thread {
 	
 	
 	public UThr () { 
+		// use shared request and return queues
 		mRequestQueue = TCPclient.requestQueue;
 		mReturnQueue = TCPclient.returnQueue;
+		// reference id from TCPclient
 		this.id = TCPclient.id;
 	}
 	
@@ -41,12 +42,15 @@ public class UThr extends Thread {
 			
 		}
 		
+		// continue to check returnQueue and see if it is empty
 		while(true){
+			// lock the critical section to ensure correct output
 			lock.lock();
 			try{
 				if(!mReturnQueue.isEmpty()){
 					reply = mReturnQueue.poll();
 					if(reply != null){
+						// print a request and its value
 						System.out.println(" Request ID: " + reply.getID() + " got " + reply.getRequest() + ": " + reply.getValue());
 					}
 				}

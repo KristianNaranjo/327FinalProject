@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RuntimeThread extends Thread {
 
-
-	private ConcurrentLinkedQueue<Request> mRequestQueue = new ConcurrentLinkedQueue<Request>();
-	private ConcurrentLinkedQueue<Return> mReturnQueue = new ConcurrentLinkedQueue<Return>();
+	
+	private ConcurrentLinkedQueue<Request> mRequestQueue;
+	private ConcurrentLinkedQueue<Return> mReturnQueue;
 	private int[] lastEven = new int[1];
 	private int[] lastOdd = new int[1];
 	
@@ -27,7 +27,9 @@ public class RuntimeThread extends Thread {
 		Request item = null;
         Thread t;
         while(!mRequestQueue.isEmpty()){
+        	
 	        switch (mRequestQueue.peek().getRequest()) {
+	        	// spawn localThread for nextEven or nextOdd request
 	        	case "nextEven": 
 	        		item = mRequestQueue.poll();
 	        	    t = new Thread(new LocalThread(item, mReturnQueue, lastEven, lastOdd));
@@ -38,6 +40,7 @@ public class RuntimeThread extends Thread {
 	        	    t = new Thread(new LocalThread(item, mReturnQueue, lastEven, lastOdd));
 					t.start();
 	        		break;
+	        	// spawn NetworkThread otherwise
 	        	case "nextEvenFib":
 	        		item = mRequestQueue.poll();
 	        	    t = new Thread(new NetworkThread(item, mReturnQueue));
@@ -56,6 +59,7 @@ public class RuntimeThread extends Thread {
 	            default: System.out.println("Invalid Entry");
 	                break;
 	        }
+	        // Display that a specific request was sent
 	        System.out.println("Sent request " + item.getID() +": "+item.getRequest());
         }
 	}

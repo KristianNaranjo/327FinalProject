@@ -13,17 +13,21 @@
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TCPclient {
+	// initialize queues as static so they can be referenced by other classes
 	static ConcurrentLinkedQueue<Request> requestQueue = new ConcurrentLinkedQueue<Request>();
 	static ConcurrentLinkedQueue<Return> returnQueue = new ConcurrentLinkedQueue<Return>();
+	// reference id number by UThr so each request has a new id
 	static int[] id = new int[1];
 
 	public static void main(String[] args) {
 		
+		// spawn 8 uThreads
 		for(int i=0; i<8; i++){
 			UThr u = new UThr();
 			u.start();
 		}
 		
+		// spawn the RuntimeThread
 		RuntimeThread r = new RuntimeThread();
 		r.start();
 	}
