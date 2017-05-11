@@ -18,6 +18,7 @@ public class LocalThread extends Thread{
 	
 	public LocalThread(Request request, ConcurrentLinkedQueue<Return> returnQueue,
 			int[] lastEven, int[] lastOdd){
+		// initialize variables passed by reference
 		mRequest = request;
 		mReturnQueue = returnQueue;
 		mLastEven = lastEven;
@@ -25,7 +26,8 @@ public class LocalThread extends Thread{
 	}
 	
 	public void run(){
-		switch(mRequest.getRequest()){
+		switch(mRequest.getRequest()){ // make calculation depending on request name
+		// add results to return queue
 			case "nextEven":
 				mReturnQueue.add(new Return(Integer.toString(nextEven()), mRequest.getRequest(), mRequest.getID()));
 				break;
@@ -36,6 +38,7 @@ public class LocalThread extends Thread{
 	}
 	
 	public int nextEven(){
+		// lock critical section to prevent race condition
 		lock.lock();
 		try{
 			mLastEven[0] += 2;
@@ -47,6 +50,7 @@ public class LocalThread extends Thread{
 	}
 	
 	public int nextOdd(){
+		// lock critical section to prevent race condition
 		lock.lock();
 		try{
 			if(mLastOdd[0] == 0){
