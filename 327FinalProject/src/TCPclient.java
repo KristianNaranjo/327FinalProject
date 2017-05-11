@@ -2,26 +2,25 @@
  * Oscar Valdez
  * Jeannine Westerkamp
  * Josh Andreasian
- * Files Associated: Communicates with TCPserver via socket
- * Description: This program first initializes the ip address of the host,
- * along with the same port number declared in the server program. It then
- * initializes variables to get the input and output stream from the server.
- * The server will give output depending on what is entered by the user.
- * The user can enter nextPrime, nextLargerRand, or nextEvenFib and they will
- * get the next 5 corresponding numbers. If the user enters anything else, the
- * server will return "Connected". Or, the client will stop if the user enters quit.
+ * Files Associated: UThr.java and RuntimeThread.java
+ * Description: This program first initializes both the request queue and the return queue that will
+ * be used by the threads in the program. This file spawns 8 uThreads and 1 runtime thread.
+ * The uThr will add requests to the request queue and the runtimeThread will send requests to
+ * either the local thread or the network thread. The local thread and the network thread will
+ * add their results to the return queue.
  * */
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TCPclient {
 	static ConcurrentLinkedQueue<Request> requestQueue = new ConcurrentLinkedQueue<Request>();
-	static ConcurrentLinkedQueue<String> returnQueue = new ConcurrentLinkedQueue<String>();
+	static ConcurrentLinkedQueue<Return> returnQueue = new ConcurrentLinkedQueue<Return>();
+	static int[] id = new int[1];
 
 	public static void main(String[] args) {
 		
 		for(int i=0; i<8; i++){
-			UThr u = new UThr(requestQueue, returnQueue);
+			UThr u = new UThr();
 			u.start();
 		}
 		

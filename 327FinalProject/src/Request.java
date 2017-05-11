@@ -1,26 +1,19 @@
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
+// create an object Request to add requests to the request queue
 public class Request {
-	
+	private int mID;
 	private String mRequest;
-	private Condition mCond;
-	private ReentrantLock mLock;
-	public Request(String request, Condition cond, ReentrantLock lock){
+	public Request(int id, String request){
+		mID = id;
 		mRequest = request;
-		mCond = cond;
-		mLock = lock;
 	}
 	
+	// use id to correctly identify a specific request
+	public int getID(){
+		return mID;
+	}
+	
+	// return the request name
 	public String getRequest() {
 		return mRequest;
-	}
-	
-	public Condition getCondition() {
-		return mCond;
-	}
-
-	public ReentrantLock getLock() {
-		return mLock;
 	}
 }
