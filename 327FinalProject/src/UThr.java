@@ -1,68 +1,60 @@
-import java.util.LinkedList;
-import java.util.Queue;
+/* Kristian Naranjo
+ * Oscar Valdez
+ * Jeannine Westerkamp
+ * Josh Andreasian
+ * Files Associated: TCPclient.java and RuntimeThread.java
+ * Description: There are 8 or more uThr's running on the same local machine as its runtimeThr. 
+ * Each uThr executes 20 iterations. At each iteration a uThr randomly selects one of 5 commands 
+ * (nextEven, nextOdd, nextEvenFib, nextLargerRand, nextPrime) to enqueue in the requestQue, 
+ * along with any other needed pieces of data, and waits for the result produced by this command. 
+ * The uThread will continue to look for items in the return queue as long as it is not empty.
+ */
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-/* 
- * There are 8 or more uThr's running on the same local machine as its runtimeThr. 
- * Each uThr executes 20 iterations. 
- * At each iteration a uThr randomly selects one of 5 commands 
- * (nextEven, nextOdd, nextEvenFib, nextLargerRand, nextPrime) to enqueue in the requestQue, 
- * along with any other needed pieces of data, and waits for the result produced by this command. 
- * After its result is enqueued in the returnQue, this thread fetches the returned value and outputs on the terminal.
- */
 public class UThr extends Thread {
 	
-	private static ConcurrentLinkedQueue<Request> mRequestQueue = new ConcurrentLinkedQueue<Request>();
-	private static ConcurrentLinkedQueue<String> mReturnQueue = new ConcurrentLinkedQueue<String>();
+	private ConcurrentLinkedQueue<Request> mRequestQueue;
+	private ConcurrentLinkedQueue<Return> mReturnQueue;
 	private ReentrantLock lock = new ReentrantLock();
+	private int [] id;
 	
 	
-	public UThr (ConcurrentLinkedQueue<Request> requestQueue, ConcurrentLinkedQueue<String> returnQueue) { 
-		mRequestQueue = requestQueue;
-		mReturnQueue = returnQueue;
+	public UThr () { 
+		mRequestQueue = TCPclient.requestQueue;
+		mReturnQueue = TCPclient.returnQueue;
+		this.id = TCPclient.id;
 	}
 	
 	public void run()  { 
 		Random rand = new Random();
 		int selector;
 		String command [] = {"nextEven", "nextOdd", "nextEvenFib", "nextLargerRand", "nextPrime"};
-		String reply; 
+		Return reply;
 		
 		// add to request queue 
 		for (int i = 0; i < 20; i++) { // 20 iterations
 			selector = rand.nextInt(5); // random command 1-5
-			ReentrantLock lock = new ReentrantLock();
-			Condition cond = lock.newCondition();
-			mRequestQueue.add(new Request(command[selector],cond,lock));
+			mRequestQueue.add(new Request(id[0]++,command[selector]));
+			
+		}
 		
-
-			// read from return queue
+		while(true){
 			lock.lock();
 			try{
-				cond.await();
-			
-				if (!mReturnQueue.isEmpty()) { // while queue is not empty  
-					try { 
-					 reply = mReturnQueue.poll();
-					 System.out.println("Reply from runtime thread for "+command[selector]+": " + reply);
-					} catch (Exception e) { 
-						System.out.println("Empty Queue");
+				if(!mReturnQueue.isEmpty()){
+					reply = mReturnQueue.poll();
+					if(reply != null){
+						System.out.println(" Request ID: " + reply.getID() + " got " + reply.getRequest() + ": " + reply.getValue());
 					}
 				}
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
 			finally{
 				lock.unlock();
 			}
-			
 		}
-		
-		
 		
 	}	
 

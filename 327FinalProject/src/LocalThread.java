@@ -1,3 +1,11 @@
+/* Kristian Naranjo
+ * Oscar Valdez
+ * Jeannine Westerkamp
+ * Josh Andreasian
+ * Files Associated: RuntimeThread.java
+ * Description: The local thread is spawned by the runtimeThread if it gets a request for nextEven or nextOdd.
+ * It will then calculate the value for the specified request and add it to the returnQueue.
+ */
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -5,10 +13,10 @@ public class LocalThread extends Thread{
 	private int[] mLastEven;
 	private int[] mLastOdd;
 	private Request mRequest;
-	private ConcurrentLinkedQueue<String> mReturnQueue;
+	private ConcurrentLinkedQueue<Return> mReturnQueue;
 	private ReentrantLock lock = new ReentrantLock();
 	
-	public LocalThread(Request request, ConcurrentLinkedQueue<String> returnQueue,
+	public LocalThread(Request request, ConcurrentLinkedQueue<Return> returnQueue,
 			int[] lastEven, int[] lastOdd){
 		mRequest = request;
 		mReturnQueue = returnQueue;
@@ -19,18 +27,11 @@ public class LocalThread extends Thread{
 	public void run(){
 		switch(mRequest.getRequest()){
 			case "nextEven":
-				mReturnQueue.add(Integer.toString(nextEven()));
+				mReturnQueue.add(new Return(Integer.toString(nextEven()), mRequest.getRequest(), mRequest.getID()));
 				break;
 			case "nextOdd":
-				mReturnQueue.add(Integer.toString(nextOdd()));
+				mReturnQueue.add(new Return(Integer.toString(nextOdd()), mRequest.getRequest(), mRequest.getID()));
 				break;				
-		}
-		mRequest.getLock().lock();
-		try{
-			mRequest.getCondition().signal();
-		}
-		finally{
-			mRequest.getLock().unlock();
 		}
 	}
 	
